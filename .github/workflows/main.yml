@@ -47,6 +47,9 @@ jobs:
           curl -LSs "https://raw.githubusercontent.com/Mr-Morat/KernelSU-Next/stable/kernel/setup.sh" | bash -s syscall
 
       - name: Start Build (with log)
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: |
           mkdir -p logs
           bash buildclang.sh 2>&1 | tee logs/build.txt
