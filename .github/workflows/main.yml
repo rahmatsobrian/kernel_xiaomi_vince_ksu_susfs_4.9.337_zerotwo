@@ -44,8 +44,14 @@ jobs:
       - name: Setup KernelSU Kprobes | [Hookless] | Manual
         run: |
           # (Next) curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s legacy
-          curl -LSs "https://raw.githubusercontent.com/rahmatsobrian/KernelSU-Next/syscall/kernel/setup.sh" | bash -s syscall
-
+          curl -LSs "https://raw.githubusercontent.com/Mr-Morat/KernelSU-Next/stable/kernel/setup.sh" | bash -s syscall
+      
+      - name: Patch supercall.c
+        run: |
+         wget -q "https://raw.githubusercontent.com/rahmatsobrian/fix/main/supercall.c" \
+         -O drivers/kernelsu/supercall/supercall.c
+         echo "supercall.c patched!"
+      
       - name: Start Build (with log)
         env:
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
