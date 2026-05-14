@@ -48,9 +48,13 @@ jobs:
       
       - name: Patch supercall.c
         run: |
-         wget -q "https://raw.githubusercontent.com/rahmatsobrian/fix/main/supercall.c" \
-         -O drivers/kernelsu/supercall/supercall.c
-         echo "supercall.c patched!"
+          # Download fix supercall
+          wget -q "https://raw.githubusercontent.com/rahmatsobrian/fix/main/supercall.c" \
+          -O /tmp/supercall_fix.c
+          # Patch kedua lokasi
+          cp /tmp/supercall_fix.c drivers/kernelsu/supercall/supercall.c
+          cp /tmp/supercall_fix.c KernelSU-Next/kernel/supercall/supercall.c
+          echo "supercall.c patched di kedua lokasi!"
         
       - name: Patch KernelSU for SUSFS v1.5.5 compat
         run: |
@@ -70,6 +74,12 @@ jobs:
          KernelSU-Next/kernel/selinux/selinux.c
          sed -i 's/return unlikely(current_sid() == susfs_init_sid);/return false; \/\/ disabled/g' \
          KernelSU-Next/kernel/selinux/selinux.c
+         # Fix setuid_hook.c - hapus ksu_handle_umount call
+         sed -i 's/ksu_handle_umount(new, old);/\/\/ ksu_handle_umount disabled/g' \
+         KernelSU-Next/kernel/hook/setuid_hook.c
+         # Fix core_hook.c - hapus ksu_handle_umount call
+         sed -i 's/return ksu_handle_umount(new, old);/return 0; \/\/ ksu_handle_umount disabled/g' \
+         KernelSU-Next/kernel/hook/core_hook.c
          echo "Patch applied!"
          # Verify
          grep -n "susfs_start_sdcard_monitor_fn\|susfs_is_current_proc_umounted\|current_sid()" \
