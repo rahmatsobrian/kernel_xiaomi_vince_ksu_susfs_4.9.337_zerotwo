@@ -48,14 +48,17 @@ jobs:
       
       - name: Patch supercall.c
         run: |
-          # Download fix supercall
           wget -q "https://raw.githubusercontent.com/rahmatsobrian/fix/main/supercall.c" \
           -O /tmp/supercall_fix.c
+          # Hapus blok susfs_enable_log
+          sed -i '/#ifdef CONFIG_KSU_SUSFS_ENABLE_LOG/,/#endif/d' /tmp/supercall_fix.c
           # Patch kedua lokasi
           cp /tmp/supercall_fix.c drivers/kernelsu/supercall/supercall.c
           cp /tmp/supercall_fix.c KernelSU-Next/kernel/supercall/supercall.c
-          echo "supercall.c patched di kedua lokasi!"
-        
+          # Verify tidak ada susfs_enable_log
+          grep -n "susfs_enable_log" /tmp/supercall_fix.c || echo "OK - susfs_enable_log removed"
+          echo "supercall.c patched!"  
+    
       - name: Patch KernelSU for SUSFS v1.5.5 compat
         run: |
          # Fix dispatch.c - hapus susfs_start_sdcard_monitor_fn
