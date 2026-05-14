@@ -51,6 +51,27 @@ jobs:
          wget -q "https://raw.githubusercontent.com/rahmatsobrian/fix/main/supercall.c" \
          -O drivers/kernelsu/supercall/supercall.c
          echo "supercall.c patched!"
+        
+      - name: Debug KernelSU SUSFS references
+        run: |
+         echo "=== Files in KernelSU-Next/kernel/ ==="
+         ls KernelSU-Next/kernel/
+         echo "=== Searching susfs_start_sdcard_monitor_fn ==="
+         grep -rn "susfs_start_sdcard_monitor_fn" KernelSU-Next/kernel/ || echo "NOT FOUND"
+         echo "=== Searching susfs_is_current_proc_umounted ==="
+         grep -rn "susfs_is_current_proc_umounted" KernelSU-Next/kernel/ || echo "NOT FOUND"
+         echo "=== Searching ksu_handle_umount ==="
+         grep -rn "ksu_handle_umount" KernelSU-Next/kernel/ || echo "NOT FOUND"
+         echo "=== Searching do_report_event ==="
+         grep -rn "do_report_event" KernelSU-Next/kernel/ || echo "NOT FOUND"
+         echo "=== Searching do_manage_mark ==="
+         grep -rn "do_manage_mark" KernelSU-Next/kernel/ || echo "NOT FOUND"
+         echo "=== Searching current_sid ==="
+         grep -rn "current_sid" KernelSU-Next/kernel/ || echo "NOT FOUND"
+         echo "=== susfs.h includes in KernelSU ==="
+         grep -rn "susfs" KernelSU-Next/kernel/ | grep -v ".o:" | head -50
+         echo "=== core_hook.c SUSFS section ==="
+         grep -n "susfs\|SUSFS" KernelSU-Next/kernel/core_hook.c | head -50
       
       - name: Start Build (with log)
         env:
